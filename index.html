@@ -18,10 +18,15 @@
       <button class="load-all-button" type="button" v-on:click="loadAll">Carregar todas</button>
     </div>
           
+    <div class="alert" v-if="errorMessage">
+      {{ errorMessage }}
+    </div>
+    
     <main hidden>
-      <div class="search-message" v-if="guesthouses.length <= 0">
+      <div class="search-message" v-if="guesthouses.length <= 0 && !errorMessage">
         Nenhum resultado encontrado
       </div>
+
 
       <div class="guesthouse-list">
         <ul>
