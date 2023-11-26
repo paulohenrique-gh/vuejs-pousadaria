@@ -26,27 +26,25 @@ const app = Vue.createApp({
     }
   },
 
-  computed: {
-    searchResults() {
-      if (this.searchText) {
-        return this.guesthouses.filter(guesthouse => {
-          return guesthouse.brandName.toLowerCase().includes(this.searchText.toLowerCase());
-        });
-      } else {
-        return this.guesthouses;
-      }
-    }
-  },
-
   async mounted() {
     await this.getGuesthouses();
   },
 
   methods: {
     async getGuesthouses() {
-      let response = await fetch('http://localhost:3000/api/v1/guesthouses');
+      this.hideDetails();
 
+      let url = '';
+      if (this.searchText) {
+        url = `http://localhost:3000/api/v1/guesthouses/?search=${this.searchText}`;
+      } else {
+        url = `http://localhost:3000/api/v1/guesthouses`;
+      }
+
+      let response = await fetch(url);
       let data = await response.json();
+
+      this.guesthouses = [];
 
       data.forEach(item => {
         let guesthouse = new Object();
@@ -56,6 +54,11 @@ const app = Vue.createApp({
       });
 
       document.querySelector('main').hidden = false;
+    },
+
+    loadAll() {
+      this.searchText = '';
+      this.getGuesthouses();
     },
     
     async getDetails(id) {
@@ -129,37 +132,26 @@ const app = Vue.createApp({
     },
 
     async checkAvailability(roomId) {
-      let checkinValue = document.getElementById('checkin').value;
-      let checkoutValue = document.getElementById('checkout').value;
-      let guestCountValue = document.getElementById('guest-count').value;
+      let room = this.rooms.find(r => r.id === roomId);
+
+      let checkinValue = document.getElementById(`checkin-${roomId}`).value;
+      let checkoutValue = document.getElementById(`checkout-${roomId}`).value;
+      let guestCountValue = document.getElementById(`guest-count-${roomId}`).value;
 
       let url = `http://localhost:3000/api/v1/rooms/${roomId}/check_availability/?` +
                 `checkin=${checkinValue}&checkout=${checkoutValue}&guest_count=${guestCountValue}`
 
-      console.log(roomId)
-      console.log(checkinValue)
-      console.log(checkoutValue)
-      console.log(guestCountValue)
-      console.log(url)
-
-      let response = await fetch(url)
-      
+      let response = await fetch(url)      
       let responseJson = await response.json();
-
-      console.log(responseJson)
-
       if (responseJson.stay_total) {
         let total = this.convertToCurrency(responseJson.stay_total);
 
-        this.roomResponse = `Total da hospedagem: ${total}`
+        room.response = `Total da hospedagem: ${total}`
       } else if (responseJson.error === 'Quarto não disponível no período informado'){
-        this.roomResponse = responseJson.error;
+        room.response = responseJson.error;
       } else {
-        this.roomResponse = "Dados inválidos"
+        room.response = "Dados inválidos";
       }
-
-      console.log('RESPONSEEEE')
-      console.log(this.roomResponse)
     },
 
     convertToCurrency(value) {
@@ -168,7 +160,7 @@ const app = Vue.createApp({
         currency: 'BRL',
         minimumFractionDigits: 2
       })
-    }
+    },
   },
   
 })

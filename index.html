@@ -9,20 +9,23 @@
   <div id="app">
     <h1>CheckedIn</h1>
 
-    <input class="search"
-           type="text"
-          v-model="searchText"
-          v-on:input="hideDetails"
-          placeholder="Digite o nome de uma pousada">        
+    <div class="search">
+      <input class="search-input"
+             type="text"
+             v-model="searchText"
+             placeholder="Nome da pousada">
+      <button class="search-button" type="button" v-on:click="getGuesthouses">Buscar</button>
+      <button class="load-all-button" type="button" v-on:click="loadAll">Carregar todas</button>
+    </div>
           
     <main hidden>
-      <div class="search-message" v-if="searchResults.length <= 0">
+      <div class="search-message" v-if="guesthouses.length <= 0">
         Nenhum resultado encontrado
       </div>
 
       <div class="guesthouse-list">
         <ul>
-          <li v-for="guesthouse in searchResults">
+          <li v-for="guesthouse in guesthouses">
             <button v-on:click="getDetails(guesthouse.id)">{{ guesthouse.brandName }}</button>
           </li>
         </ul>
@@ -60,29 +63,30 @@
               Verificar disponibilidade
               <div class="checkin-field">
                 <label for="checkin">Check-in</label>
-                <input type="date" id="checkin">
+                <input type="date" :id="`checkin-${room.id}`">
               </div>
               <div class="checkout-field">
                 <label for="checkout">Check-out</label>
-                <input type="date" id="checkout">
+                <input type="date" :id="`checkout-${room.id}`">
               </div>
               <div class="guest-count-field">
                 <label for="checkout">Quantidade de hóspedes</label>
-                <input type="number" id="guest-count" min="1">
+                <input type="number" :id="`guest-count-${room.id}`" min="1">
               </div>
 
-              <div>
+              <div class="form-disclaimer">
                 <small>
-                  Antes de consultar, certifique-se de que as datas não são passadas,
-                  que a data de check-out seja maior que a data de check-in,
-                  e que a quantidade de hóspedes não ultrapasse a capacidade do quarto
+                  Antes de consultar, certifique-se de que:
+                  <br>- As datas não sejam passadas
+                  <br>- A data de check-out seja maior que a data de check-in
+                  <br>- A quantidade de hóspedes não ultrapasse a capacidade do quarto
                 </small>
               </div>
 
               <button type="button" v-on:click="checkAvailability(room.id)">Consultar</button>
             </form>
 
-            <div class="room-response">{{ roomResponse }}</div>
+            <div class="room-response">{{ room.response }}</div>
 
           </li>
         </ul>
