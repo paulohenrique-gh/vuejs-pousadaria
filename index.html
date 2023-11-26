@@ -8,49 +8,61 @@
 <body>
   <div id="app">
     <h1>CheckedIn</h1>
-    
-    <div class="guesthouse-list">
-      <ul>
-        <li v-for="(guesthouse, index) in guesthouses">
-          <button v-on:click="getDetails(guesthouse.id)">{{ guesthouse.brand_name }}</button>
-        </li>
-      </ul>
-    </div>
 
-    <div class="guesthouse-details" hidden>
-      <h2 id="guesthouse-name">{{ brand_name }}</h2>
-      <div id="average-rating" v-if="average_rating">
-        Média de avaliações: ★ {{ parseFloat(average_rating).toFixed(2) }}
+    <input class="search"
+           type="text"
+          v-model="searchText"
+          v-on:input="hideDetails"
+          placeholder="Digite o nome de uma pousada">
+
+          
+          
+          
+    <main hidden>
+      <div class="search-message" v-if="searchResults.length <= 0">
+        Nenhum resultado encontrado
       </div>
-      <div id="description">{{ description }}</div>
-      <div id="contact-info">Contato: {{ phone_number }} | {{ email }}</div>
-      <div id="pet-policy" v-if="pet_policy">Aceita animais de estimação</div>
-      <div id="payment-methods">Formas de pagamento: {{ payment_methods }}</div>
-      <div id="guesthouse-policy">{{ guesthouse_policy }}</div>
-      <div id="checkin-time">Horário de check-in: {{ checkin_time }}</div>
-      <div id="checkout-time">Horário de check-out: {{ checkout_time }}</div>
-      <div id="address">{{ address }}</div>
 
-      <button v-on:click="getRooms(id)">Carregar quartos</button>
-    </div>
+      <div class="guesthouse-list">
+        <ul>
+          <li v-for="guesthouse in searchResults">
+            <button v-on:click="getDetails(guesthouse.id)">{{ guesthouse.brandName }}</button>
+          </li>
+        </ul>
+      </div>
 
-    <div class="rooms" hidden>
-      <ul>
-        <li v-for="room in rooms">
-          <h3 id="room-name">{{ room.name }}</h3>
-          <div id="room-description">{{ room.description }}</div>
-          <div id="room-daily-rate">Valor padrão da diária: {{ room.daily_rate }}</div>
-          <div id="room-dimension">Área: {{ room.dimension }} m²</div>
-          <div id="room-dimension">Capacidade máxima para {{ room.max_people }} pessoas</div>
-          Adicionais: 
-          <ul>
-            <li v-for="feature in room.features">{{ feature }}</li>
-          </ul>
-
-          <button>Verificar disponibilidade</button>
-        </li>
-      </ul>
-    </div>
+      <section class="guesthouse-details" :hidden="hideGuesthouseDetails">
+        <h2 id="guesthouse-name">{{ brandName }}</h2>
+        <div id="average-rating" v-if="averageRating">
+          Média de avaliações: ★ {{ parseFloat(averageRating).toFixed(2) }}
+        </div>
+        <div id="description">{{ description }}</div>
+        <div id="contact-info">Contato: {{ phoneNumber }} | {{ email }}</div>
+        <div id="pet-policy" v-if="petPolicy">Aceita animais de estimação</div>
+        <div id="payment-methods">Formas de pagamento: {{ paymentMethods }}</div>
+        <div id="guesthouse-policy">{{ guesthousePolicy }}</div>
+        <div id="checkin-time">Horário de check-in: {{ checkinTime }}</div>
+        <div id="checkout-time">Horário de check-out: {{ checkoutTime }}</div>
+        <div id="address">{{ address }}</div>
+        <button v-on:click="getRooms(id)">Carregar quartos</button>
+      </section>
+      <section class="rooms" :hidden="hideRooms">
+        <ul>
+          <li v-for="room in rooms">
+            <h3 id="room-name">{{ room.name }}</h3>
+            <div id="room-description">{{ room.description }}</div>
+            <div id="room-daily-rate">Valor padrão da diária: {{ room.dailyRate }}</div>
+            <div id="room-dimension">Área: {{ room.dimension }} m²</div>
+            <div id="room-dimension">Capacidade máxima para {{ room.maxPeople }} pessoas</div>
+            Adicionais:
+            <ul>
+              <li v-for="feature in room.features">{{ feature }}</li>
+            </ul>
+            <button>Verificar disponibilidade</button>
+          </li>
+        </ul>
+      </section>
+    </main>
   </div>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>

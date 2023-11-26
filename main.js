@@ -1,21 +1,38 @@
 const app = Vue.createApp({
   data() {
     return {
+      searchText: '',
+
       id: '',
-      brand_name: '',
+      brandName: '',
       description: '',
-      phone_number: '',
+      phoneNumber: '',
       email: '',
-      pet_policy: '',
-      guesthouse_policy: '',
-      checkin_time: '',
-      checkout_time: '',
-      payment_methods: '',
+      petPolicy: '',
+      guesthousePolicy: '',
+      checkinTime: '',
+      checkoutTime: '',
+      paymentMethods: '',
       address: '',
-      average_rating: '',
+      averageRating: '',
 
       guesthouses: [],
-      rooms: []
+      rooms: [],
+      
+      hideGuesthouseDetails: true,
+      hideRooms: true
+    }
+  },
+
+  computed: {
+    searchResults() {
+      if (this.searchText) {
+        return this.guesthouses.filter(guesthouse => {
+          return guesthouse.brandName.toLowerCase().includes(this.searchText.toLowerCase());
+        });
+      } else {
+        return this.guesthouses;
+      }
     }
   },
 
@@ -29,9 +46,14 @@ const app = Vue.createApp({
 
       let data = await response.json();
 
-      data.forEach(guesthouse => this.guesthouses.push(guesthouse));
+      data.forEach(item => {
+        let guesthouse = new Object();
+        guesthouse.id = item.id;
+        guesthouse.brandName = item.brand_name;
+        this.guesthouses.push(guesthouse)
+      });
 
-      console.log(this.guesthouses);
+      document.querySelector('main').hidden = false;
     },
     
     async getDetails(id) {
@@ -41,16 +63,16 @@ const app = Vue.createApp({
       let guesthouse = await response.json();
       
       this.id = guesthouse.id;
-      this.brand_name = guesthouse.brand_name;
-      this.average_rating = guesthouse.average_rating;
+      this.brandName = guesthouse.brand_name;
+      this.averageRating = guesthouse.average_rating;
       this.description = guesthouse.description;
-      this.phone_number = guesthouse.phone_number;
+      this.phoneNumber = guesthouse.phone_number;
       this.email = guesthouse.email;
-      this.pet_policy = guesthouse.pet_policy;
-      this.guesthouse_policy = guesthouse.guesthouse_policy;
-      this.checkin_time = guesthouse.checkin_time;
-      this.checkout_time = guesthouse.checkout_time;
-      this.payment_methods = [
+      this.petPolicy = guesthouse.pet_policy;
+      this.guesthousePolicy = guesthouse.guesthouse_policy;
+      this.checkinTime = guesthouse.checkin_time;
+      this.checkoutTime = guesthouse.checkout_time;
+      this.paymentMethods = [
         guesthouse.payment_method_one,
         guesthouse.payment_method_two,
         guesthouse.payment_method_three
@@ -65,7 +87,7 @@ const app = Vue.createApp({
         guesthouse.address.state
       ].filter(info => info !== '').join(', ');
 
-      document.querySelector('.guesthouse-details').removeAttribute('hidden')
+      this.hideGuesthouseDetails = false;
     },
 
     async getRooms(id) {
@@ -74,19 +96,18 @@ const app = Vue.createApp({
 
       this.rooms = [];
 
-      console.log(rooms);
       rooms.forEach(item => {
         let room = new Object();
         room.id = item.id;
         room.name = item.name;
         room.description = item.description;
-        room.daily_rate = item.daily_rate.toLocaleString('pt-BR', {
+        room.dailyRate = item.daily_rate.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL',
           minimumFractionDigits: 2
         });
         room.dimension = item.dimension;
-        room.max_people = item.max_people;
+        room.maxPeople = item.max_people;
         room.features = [
           item.private_bathroom ? 'Banheiro próprio' : '',
           item.balcony ? 'Varanda' : '',
@@ -97,11 +118,15 @@ const app = Vue.createApp({
           item.accessibility ? 'Acessível para pessoas com deficiência' : ''
         ].filter(feat => feat !== '');
 
-        console.log(room)
         this.rooms.push(room);
       });
 
-      document.querySelector('.rooms').removeAttribute('hidden');
+      this.hideRooms = false;
+    },
+
+    hideDetails() {
+      this.hideGuesthouseDetails = true;
+      this.hideRooms = true;
     }
   }
 })
