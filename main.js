@@ -14,7 +14,8 @@ const app = Vue.createApp({
       address: '',
       average_rating: '',
 
-      guesthouses: []
+      guesthouses: [],
+      rooms: []
     }
   },
 
@@ -33,9 +34,10 @@ const app = Vue.createApp({
       console.log(this.guesthouses);
     },
     
-    async loadDetails(id) {
-      let response = await fetch(`http://localhost:3000/api/v1/guesthouses/${id}`)
+    async getDetails(id) {
+      this.rooms = [];
 
+      let response = await fetch(`http://localhost:3000/api/v1/guesthouses/${id}`)
       let guesthouse = await response.json();
       
       this.id = guesthouse.id;
@@ -64,6 +66,42 @@ const app = Vue.createApp({
       ].filter(info => info !== '').join(', ');
 
       document.querySelector('.guesthouse-details').removeAttribute('hidden')
+    },
+
+    async getRooms(id) {
+      let response = await fetch(`http://localhost:3000/api/v1/guesthouses/${id}/rooms`)
+      let rooms = await response.json();
+
+      this.rooms = [];
+
+      console.log(rooms);
+      rooms.forEach(item => {
+        let room = new Object();
+        room.id = item.id;
+        room.name = item.name;
+        room.description = item.description;
+        room.daily_rate = item.daily_rate.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+          minimumFractionDigits: 2
+        });
+        room.dimension = item.dimension;
+        room.max_people = item.max_people;
+        room.features = [
+          item.private_bathroom ? 'Banheiro próprio' : '',
+          item.balcony ? 'Varanda' : '',
+          item.air_conditioning ? 'Ar-condicionado' : '',
+          item.tv ? 'TV': '',
+          item.closet ? 'Guarda-roupas' : '',
+          item.safe ? 'Cofre' : '',
+          item.accessibility ? 'Acessível para pessoas com deficiência' : ''
+        ].filter(feat => feat !== '');
+
+        console.log(room)
+        this.rooms.push(room);
+      });
+
+      document.querySelector('.rooms').removeAttribute('hidden');
     }
   }
 })

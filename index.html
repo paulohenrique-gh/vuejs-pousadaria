@@ -12,14 +12,14 @@
     <div class="guesthouse-list">
       <ul>
         <li v-for="(guesthouse, index) in guesthouses">
-          <button v-on:click="loadDetails(guesthouse.id)">{{ guesthouse.brand_name }}</button>
+          <button v-on:click="getDetails(guesthouse.id)">{{ guesthouse.brand_name }}</button>
         </li>
       </ul>
     </div>
 
     <div class="guesthouse-details" hidden>
-      <h2 id="guesthouse_name">{{ brand_name }}</h2>
-      <div id="average_rating" v-if="average_rating">
+      <h2 id="guesthouse-name">{{ brand_name }}</h2>
+      <div id="average-rating" v-if="average_rating">
         Média de avaliações: ★ {{ parseFloat(average_rating).toFixed(2) }}
       </div>
       <div id="description">{{ description }}</div>
@@ -31,7 +31,25 @@
       <div id="checkout-time">Horário de check-out: {{ checkout_time }}</div>
       <div id="address">{{ address }}</div>
 
-      <button v-on:click="loadRooms(guesthouse.id)">Carregar quartos</button>
+      <button v-on:click="getRooms(id)">Carregar quartos</button>
+    </div>
+
+    <div class="rooms" hidden>
+      <ul>
+        <li v-for="room in rooms">
+          <h3 id="room-name">{{ room.name }}</h3>
+          <div id="room-description">{{ room.description }}</div>
+          <div id="room-daily-rate">Valor padrão da diária: {{ room.daily_rate }}</div>
+          <div id="room-dimension">Área: {{ room.dimension }} m²</div>
+          <div id="room-dimension">Capacidade máxima para {{ room.max_people }} pessoas</div>
+          Adicionais: 
+          <ul>
+            <li v-for="feature in room.features">{{ feature }}</li>
+          </ul>
+
+          <button>Verificar disponibilidade</button>
+        </li>
+      </ul>
     </div>
   </div>
 
