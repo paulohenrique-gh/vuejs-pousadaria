@@ -20,7 +20,9 @@ const app = Vue.createApp({
       rooms: [],
       
       hideGuesthouseDetails: true,
-      hideRooms: true
+      hideRooms: true,
+
+      roomResponse: ''
     }
   },
 
@@ -57,6 +59,7 @@ const app = Vue.createApp({
     },
     
     async getDetails(id) {
+      this.hideRoomForm = true;
       this.rooms = [];
 
       let response = await fetch(`http://localhost:3000/api/v1/guesthouses/${id}`)
@@ -101,11 +104,7 @@ const app = Vue.createApp({
         room.id = item.id;
         room.name = item.name;
         room.description = item.description;
-        room.dailyRate = item.daily_rate.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-          minimumFractionDigits: 2
-        });
+        room.dailyRate = this.convertToCurrency(item.daily_rate);
         room.dimension = item.dimension;
         room.maxPeople = item.max_people;
         room.features = [
@@ -127,8 +126,51 @@ const app = Vue.createApp({
     hideDetails() {
       this.hideGuesthouseDetails = true;
       this.hideRooms = true;
+    },
+
+    async checkAvailability(roomId) {
+      let checkinValue = document.getElementById('checkin').value;
+      let checkoutValue = document.getElementById('checkout').value;
+      let guestCountValue = document.getElementById('guest-count').value;
+
+      let url = `http://localhost:3000/api/v1/rooms/${roomId}/check_availability/?` +
+                `checkin=${checkinValue}&checkout=${checkoutValue}&guest_count=${guestCountValue}`
+
+      console.log(roomId)
+      console.log(checkinValue)
+      console.log(checkoutValue)
+      console.log(guestCountValue)
+      console.log(url)
+
+      let response = await fetch(url)
+      
+      let responseJson = await response.json();
+
+      console.log(responseJson)
+
+      if (responseJson.stay_total) {
+        let total = this.convertToCurrency(responseJson.stay_total);
+
+        this.roomResponse = `Total da hospedagem: ${total}`
+      } else if (responseJson.error === 'Quarto não disponível no período informado'){
+        this.roomResponse = responseJson.error;
+      } else {
+        this.roomResponse = "Dados inválidos"
+      }
+
+      console.log('RESPONSEEEE')
+      console.log(this.roomResponse)
+    },
+
+    convertToCurrency(value) {
+      return value.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2
+      })
     }
-  }
+  },
+  
 })
 
 app.mount('#app')

@@ -13,10 +13,7 @@
            type="text"
           v-model="searchText"
           v-on:input="hideDetails"
-          placeholder="Digite o nome de uma pousada">
-
-          
-          
+          placeholder="Digite o nome de uma pousada">        
           
     <main hidden>
       <div class="search-message" v-if="searchResults.length <= 0">
@@ -46,6 +43,7 @@
         <div id="address">{{ address }}</div>
         <button v-on:click="getRooms(id)">Carregar quartos</button>
       </section>
+
       <section class="rooms" :hidden="hideRooms">
         <ul>
           <li v-for="room in rooms">
@@ -58,7 +56,34 @@
             <ul>
               <li v-for="feature in room.features">{{ feature }}</li>
             </ul>
-            <button>Verificar disponibilidade</button>
+            <form class="room-form">
+              Verificar disponibilidade
+              <div class="checkin-field">
+                <label for="checkin">Check-in</label>
+                <input type="date" id="checkin">
+              </div>
+              <div class="checkout-field">
+                <label for="checkout">Check-out</label>
+                <input type="date" id="checkout">
+              </div>
+              <div class="guest-count-field">
+                <label for="checkout">Quantidade de hóspedes</label>
+                <input type="number" id="guest-count" min="1">
+              </div>
+
+              <div>
+                <small>
+                  Antes de consultar, certifique-se de que as datas não são passadas,
+                  que a data de check-out seja maior que a data de check-in,
+                  e que a quantidade de hóspedes não ultrapasse a capacidade do quarto
+                </small>
+              </div>
+
+              <button type="button" v-on:click="checkAvailability(room.id)">Consultar</button>
+            </form>
+
+            <div class="room-response">{{ roomResponse }}</div>
+
           </li>
         </ul>
       </section>
