@@ -9,12 +9,29 @@
   <div id="app">
     <h1>CheckedIn</h1>
     
-    <div>
+    <div class="guesthouse-list">
       <ul>
-        <li v-for="guesthouse in guesthouses">
-          {{ guesthouse.brand_name }}
+        <li v-for="(guesthouse, index) in guesthouses">
+          <button v-on:click="loadDetails(guesthouse.id)">{{ guesthouse.brand_name }}</button>
         </li>
       </ul>
+    </div>
+
+    <div class="guesthouse-details" hidden>
+      <h2 id="guesthouse_name">{{ brand_name }}</h2>
+      <div id="average_rating" v-if="average_rating">
+        Média de avaliações: ★ {{ parseFloat(average_rating).toFixed(2) }}
+      </div>
+      <div id="description">{{ description }}</div>
+      <div id="contact-info">Contato: {{ phone_number }} | {{ email }}</div>
+      <div id="pet-policy" v-if="pet_policy">Aceita animais de estimação</div>
+      <div id="payment-methods">Formas de pagamento: {{ payment_methods }}</div>
+      <div id="guesthouse-policy">{{ guesthouse_policy }}</div>
+      <div id="checkin-time">Horário de check-in: {{ checkin_time }}</div>
+      <div id="checkout-time">Horário de check-out: {{ checkout_time }}</div>
+      <div id="address">{{ address }}</div>
+
+      <button v-on:click="loadRooms(guesthouse.id)">Carregar quartos</button>
     </div>
   </div>
 
