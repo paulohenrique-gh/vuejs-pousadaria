@@ -45,7 +45,7 @@ const app = Vue.createApp({
         let response = await fetch(url);
 
         if (response.status !== 200) {
-          this.errorMessage = 'Dados indisponívei';
+          this.errorMessage = 'Dados indisponíveis';
         }
 
         let data = await response.json();
@@ -69,6 +69,7 @@ const app = Vue.createApp({
     },
     
     async getDetails(id) {
+      this.hideDetails();
       this.hideRoomForm = true;
       this.rooms = [];
       this.errorMessage = '';
@@ -77,7 +78,7 @@ const app = Vue.createApp({
         let response = await fetch(`http://localhost:3000/api/v1/guesthouses/${id}`)
 
         if (response.status !== 200) {
-          this.errorMessage = 'Dados indisponívei';
+          this.errorMessage = 'Dados indisponíveis';
         }
 
         let guesthouse = await response.json();
@@ -120,7 +121,7 @@ const app = Vue.createApp({
         let response = await fetch(`http://localhost:3000/api/v1/guesthouses/${id}/rooms`)
 
         if (response.status !== 200) {
-          this.errorMessage = 'Dados indisponívei';
+          this.errorMessage = 'Dados indisponíveis';
         }
 
         let rooms = await response.json();
@@ -173,10 +174,6 @@ const app = Vue.createApp({
                   `checkin=${checkinValue}&checkout=${checkoutValue}&guest_count=${guestCountValue}`
   
         let response = await fetch(url)
-
-        if (response.status !== 200) {
-          this.errorMessage = 'Dados indisponívei';
-        }
 
         let responseJson = await response.json();
         if (responseJson.stay_total) {

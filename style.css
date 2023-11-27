@@ -1,0 +1,7 @@
+.guesthouse-list-item:hover {
+  cursor: pointer;  
+}
+
+.room-list {
+  list-style: none;
+}
