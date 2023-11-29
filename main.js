@@ -17,6 +17,7 @@ const app = Vue.createApp({
       address: '',
       averageRating: '',
 
+      cities: [],      
       guesthouses: [],
       rooms: [],
       
@@ -26,13 +27,45 @@ const app = Vue.createApp({
   },
 
   async mounted() {
+    await this.getCities();
     await this.getGuesthouses();
   },
 
   methods: {
+    fillGuesthousesArray(guesthouses) {
+      this.guesthouses = [];
+  
+      guesthouses.forEach(item => {
+        let guesthouse = new Object();
+        guesthouse.id = item.id;
+        guesthouse.brandName = item.brand_name;
+        this.guesthouses.push(guesthouse);
+      });
+
+      document.querySelector('main').hidden = false;
+    },
+
+    async getCities() {
+      this.hideDetailsAndErrors();
+
+      try {
+        let response = await fetch(`http://localhost:3000/api/v1/guesthouses/cities`)
+        
+        if (response.status !== 200) {
+          this.errorMessage = 'Dados indisponíveis';
+          return;
+        }
+
+        let cities = await response.json();
+
+        cities.forEach(city => this.cities.push(city.city_name));
+      } catch (error) {
+        this.errorMessage = 'Dados indisponíveis';
+      }
+    },
+
     async getGuesthouses() {
-      this.hideDetails();
-      this.errorMessage = '';
+      this.hideDetailsAndErrors();
 
       try {
         let url = '';
@@ -46,19 +79,32 @@ const app = Vue.createApp({
 
         if (response.status !== 200) {
           this.errorMessage = 'Dados indisponíveis';
+          return;
         }
 
-        let data = await response.json();
-        this.guesthouses = [];
-  
-        data.forEach(item => {
-          let guesthouse = new Object();
-          guesthouse.id = item.id;
-          guesthouse.brandName = item.brand_name;
-          this.guesthouses.push(guesthouse)
-        });
-        document.querySelector('main').hidden = false;
+        let guesthouses = await response.json();
+
+        this.fillGuesthousesArray(guesthouses);
       } catch(e) {
+        this.errorMessage = 'Dados indisponíveis';
+      }
+    },
+
+    async getGuesthousesByCity(city) {
+      this.hideDetailsAndErrors();
+
+      try {
+        let response = await fetch(`http://localhost:3000/api/v1/guesthouses/cities/?city=${city}`)
+
+        if (response.status !== 200) {
+          this.errorMessage = 'Dados indisponíveis';
+          return;
+        }
+
+        let guesthouses = await response.json();
+
+        this.fillGuesthousesArray(guesthouses);
+      } catch (error) {
         this.errorMessage = 'Dados indisponíveis';
       }
     },
@@ -69,10 +115,9 @@ const app = Vue.createApp({
     },
     
     async getDetails(id) {
-      this.hideDetails();
+      this.hideDetailsAndErrors();
       this.hideRoomForm = true;
       this.rooms = [];
-      this.errorMessage = '';
 
       try {
         let response = await fetch(`http://localhost:3000/api/v1/guesthouses/${id}`)
@@ -112,6 +157,14 @@ const app = Vue.createApp({
       } catch (e) {
         this.errorMessage = 'Dados indisponíveis';
       }
+    },
+
+    convertToCurrency(value) {
+      return value.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2
+      })
     },
 
     async getRooms(id) {
@@ -155,9 +208,10 @@ const app = Vue.createApp({
       }
     },
 
-    hideDetails() {
+    hideDetailsAndErrors() {
       this.hideGuesthouseDetails = true;
       this.hideRooms = true;
+      this.errorMessage = '';
     },
 
     async checkAvailability(roomId) {
@@ -188,15 +242,7 @@ const app = Vue.createApp({
       } catch (e) {
         this.errorMessage = 'Dados indisponíveis';
       }
-    },
-
-    convertToCurrency(value) {
-      return value.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 2
-      })
-    },
+    }
   },
   
 })

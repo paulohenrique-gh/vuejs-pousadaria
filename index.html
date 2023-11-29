@@ -11,7 +11,7 @@
   <div id="app" class="container">
     
     <div class="container text-center row align-items-center p-4 mb-4">
-      <h1 class="col-6">CheckedIn</h1>      
+      <h1 class="col-6">CheckedIn</h1>
       <div class="search input-group container w-50 col-6">
         <input class="search-input form-control"
                type="text"
@@ -24,33 +24,55 @@
         {{ errorMessage }}
       </div>
     </div>
-          
 
     <main class="container" hidden>
       <div class="container">
         <div class="search-message text-center alert alert-warning" v-if="guesthouses.length <= 0 && !errorMessage">
           Nenhum resultado encontrado
         </div>
+
         <div class="row justify-content-between">
-          <div class="guesthouse-list col-6">
-            <ul class="list-group">
-              <li v-for="guesthouse in guesthouses"
-                  class="list-group-item list-group-item-action guesthouse-list-item"
-                  v-on:click="getDetails(guesthouse.id)">
-                    {{ guesthouse.brandName }}
-              </li>
-            </ul>
+          <div class="row col-6">
+            <strong class="col-6 text-center mb-3">Cidades</strong>
+            <strong class="col-6 text-center mb-3">Pousadas</strong>
           </div>
-          
+        </div>
+
+        <div class="row justify-content-between">
+          <div class="row col-6">
+            <div class="col-6">
+              <ul class="list-group">
+                <li v-for="city in cities"
+                    class="list-group-item list-group-item-action guesthouse-list-item"
+                    v-on:click="getGuesthousesByCity(city)">
+                  {{ city }}
+                </li>
+              </ul>
+            </div>
+            
+            <div class="guesthouse-list col-6">
+              <ul class="list-group">
+                <li v-for="guesthouse in guesthouses"
+                    class="list-group-item list-group-item-action guesthouse-list-item"
+                    v-on:click="getDetails(guesthouse.id)">
+                      {{ guesthouse.brandName }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
           <section class="guesthouse-details col-6 card w-auto" :hidden="hideGuesthouseDetails">
             <h3 id="guesthouse-name" class="card-header text-center">{{ brandName }}</h3>
+
             <div class="card-body container">
               <div class="card-body">
                 <div id="description" class="card-title fw-bold">{{ description }}</div>
+
                 <div class="card-text">
                   <div id="average-rating" v-if="averageRating">
-                    Média de avaliações: ★ {{ parseFloat(averageRating).toFixed(2) }}
+                    <strong>Média de avaliações:</strong> ★ {{ parseFloat(averageRating).toFixed(2) }}
                   </div>
+
                   <div id="contact-info">Contato: {{ phoneNumber }} | {{ email }}</div>
                   <div id="pet-policy" v-if="petPolicy">Aceita animais de estimação</div>
                   <div id="payment-methods">Formas de pagamento: {{ paymentMethods }}</div>
@@ -59,6 +81,7 @@
                   <div id="checkout-time">Horário de check-out: {{ checkoutTime }}</div>
                   <div id="address">{{ address }}</div>
                 </div>
+
                 <div class="text-center p-4">
                   <button class="btn btn-primary" v-on:click="getRooms(id)">Carregar quartos</button>
                 </div>
@@ -68,8 +91,11 @@
         </div>
       </div>
 
+      
       <section class="rooms container" :hidden="hideRooms">
-        <div class="row text-center m-3">
+        <div v-if="rooms.length == 0" class="text-center mt-4">Esta pousada não possui quartos cadastrados</div>
+        
+        <div v-else class="row text-center m-3">
           <small class="alert alert-warning">
             Antes de consultar disponibilidade, certifique-se de que:
             <br>- As datas não sejam passadas

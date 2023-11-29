@@ -38,3 +38,13 @@ Parâmetros:
 - ```checkin```
 - ```checkout```
 - ```guest_count```
+
+## Listagem de cidades
+
+As cidades listadas são as cidades onde há pousadas ativas disponíveis. Ao clicar em uma cidade, a lista de pousadas é atualizada e exibe apenas as pousadas na cidade selecionada.
+
+Endpoint utilizado:
+- ```http://localhost:3000/api/v1/guesthouses/cities```
+
+Parâmetro:
+- ```city```
