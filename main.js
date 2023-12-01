@@ -142,7 +142,7 @@ const app = Vue.createApp({
           guesthouse.payment_method_one,
           guesthouse.payment_method_two,
           guesthouse.payment_method_three
-        ].filter(pm => pm !== '').join(' | ');
+        ].filter(pm => pm !== null).join(' | ');
         this.address = [
           guesthouse.address.street_name,
           guesthouse.address.number,
@@ -151,8 +151,7 @@ const app = Vue.createApp({
           guesthouse.address.postal_code,
           guesthouse.address.city,
           guesthouse.address.state
-        ].filter(info => info !== '').join(', ');
-  
+        ].filter(info => info !== null).join(', ');
         this.hideGuesthouseDetails = false;
       } catch (e) {
         this.errorMessage = 'Dados indisponíveis';
@@ -243,8 +242,7 @@ const app = Vue.createApp({
         this.errorMessage = 'Dados indisponíveis';
       }
     }
-  },
-  
+  }  
 })
 
 app.mount('#app')
